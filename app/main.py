@@ -60,7 +60,6 @@ async def create_railstation(
     try:
         await session.commit()
     except IntegrityError as e:
-        await session.rollback()
         raise_integrity_error(e)
     await session.refresh(railwaystation)
 

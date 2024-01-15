@@ -3,7 +3,7 @@ import contextlib
 import logging
 from asyncio import current_task
 
-from sqlalchemy.exc import SQLAlchemyError, InvalidRequestError
+from sqlalchemy.exc import SQLAlchemyError, InvalidRequestError, DatabaseError
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.ext.asyncio import async_sessionmaker, async_scoped_session
@@ -59,8 +59,12 @@ async def get_session(session=None) -> [AsyncMultiSession]:
         yield session
     else:
         async with AsyncScopedSession() as session:
-            yield session
-            await AsyncScopedSession.remove()
+            try:
+                yield session
+            except DatabaseError:
+                await session.rollback()
+            finally:
+                await AsyncScopedSession.remove()
 
 get_session_ctx = contextlib.asynccontextmanager(get_session)
 
