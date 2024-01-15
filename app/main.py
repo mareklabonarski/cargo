@@ -1,3 +1,4 @@
+import asyncio
 import logging.config
 from uuid import uuid4
 
@@ -112,15 +113,15 @@ async def create_railstation(
 async def perform_railstation_arrival(
         railwaystation_id: int,
         request: StationRequest,
-        session: AsyncSession = Depends(get_session),
 ) -> StationResponse:
-    locomotive = await Locomotive.get(session, _id=request.locomotive_id)
-    station = await RailWayStation.get(session, _id=railwaystation_id)
+    locomotive = Locomotive.get(_id=request.locomotive_id)
+    station = RailWayStation.get(_id=railwaystation_id)
+    locomotive, station = await asyncio.gather(locomotive, station)
 
     if locomotive.railwaystation_id:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail=f'Locomotive {locomotive.name} has already been on a station {station.name}'
+            detail=f'Locomotive {locomotive.name} has been already on a station {station.name}'
         )
 
     task_id = uuid4()
