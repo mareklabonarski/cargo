@@ -1,3 +1,4 @@
+import contextlib
 import logging
 from functools import wraps
 
@@ -48,3 +49,12 @@ async def incr_app_state():
 async def decr_app_state():
     result = await redis_client.decr("request_counter")
     return result
+
+
+@contextlib.asynccontextmanager
+async def set_app_busy():
+    await incr_app_state()
+    try:
+        yield
+    finally:
+        await decr_app_state()

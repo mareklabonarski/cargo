@@ -24,16 +24,15 @@ from .exceptions import raise_integrity_error
 from .models import RailWayStation, RailWayStationModel, Locomotive, \
     RailWayStationResponse, StationRequest, TaskStatusResponse, StationResponse
 from .settings import *  # noqa
-from .state import redis_client, incr_app_state, decr_app_state, init_app_state
+from .state import redis_client, set_app_busy, init_app_state
 
 app = FastAPI()
 
 
 @app.middleware("http")
 async def set_app_state(request: Request, call_next):
-    await incr_app_state()
-    response = await call_next(request)
-    await decr_app_state()
+    async with set_app_busy():
+        response = await call_next(request)
     return response
 
 

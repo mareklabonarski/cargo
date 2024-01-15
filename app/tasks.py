@@ -1,5 +1,4 @@
 import asyncio
-import contextlib
 import logging
 from functools import wraps
 from typing import Callable, Optional
@@ -10,20 +9,13 @@ from celery import Celery
 from app.db import get_session_ctx
 from app.models import RailWayStation, Locomotive, ArrivalDepartureStatus
 from app.settings import CELERY_BROKER_URL, CELERY_RESULT_BACKEND
-from app.state import incr_app_state, decr_app_state
+from app.state import set_app_busy
 
 celery = Celery(
     'tasks',
     broker=CELERY_BROKER_URL,
     backend=CELERY_RESULT_BACKEND
 )
-
-
-@contextlib.asynccontextmanager
-async def set_app_busy():
-    await incr_app_state()
-    yield
-    await decr_app_state()
 
 
 def run_async(async_func: Callable) -> Callable:
