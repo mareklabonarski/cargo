@@ -17,6 +17,7 @@ async def send_state(client: httpx.AsyncClient):
             response = await client.post(STATE_URL, json={'state': state})
             data = await response.json()
             logging.info(f'Response to state report: status_code={response.status_code} data={data}')
+            response.raise_for_status()
         except Exception as e:  # noqa
             logging.error(f'Could not report state {state} to the url {STATE_URL}: {str(e)}', exc_info=False)
 

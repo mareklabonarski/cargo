@@ -59,8 +59,8 @@ async def perform_arrival(station_id: int, locomotive_id: int, notify_url: Optio
                     'notify_url': notify_url,
                     'status': status,
                 })
+                response.raise_for_status()
             except Exception as e:
                 logging.error(f'Could not send notify request to {notify_url} with status {status}. {str(e)}')
 
     logging.info('Arrival Finished')
-
