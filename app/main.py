@@ -119,7 +119,7 @@ async def perform_railstation_arrival(
     if locomotive.railwaystation_id:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail=f'Locomotive {locomotive.name} has been already on a station {station.name}'
+            detail=f'Locomotive {locomotive.name} has been already on station {station.name}'
         )
 
     task_id = uuid4()

@@ -223,7 +223,7 @@ async def test_perform_arrival(
     )
 
     assert response.status_code == status.HTTP_409_CONFLICT
-    assert response.json()['detail'] == f'Locomotive {locomotive.name} has been already on a station {station.name}'
+    assert response.json()['detail'] == f'Locomotive {locomotive.name} has been already on station {station.name}'
 
 
 
